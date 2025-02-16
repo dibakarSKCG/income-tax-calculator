@@ -1,4 +1,3 @@
-```markdown
 # Income Tax Calculator (Financial Year 2024-25)
 
 This repository contains a simple, responsive Income Tax Calculator built using HTML, CSS, and JavaScript. The calculator helps users compute their annual gross salary and tax payable based on inputs such as basic pay, grade pay, dearness allowance, house rent allowance, and arrears. It supports both the Old and New Tax Regimes with detailed tax breakdowns.
@@ -19,7 +18,7 @@ This repository contains a simple, responsive Income Tax Calculator built using 
 ## Live Demo
 
 View the live calculator on GitHub Pages:  
-[Live Demo](https://dibakarskcg.github.io/income-tax-calculator/)
+[https://dibakarskcg.github.io/income-tax-calculator/](https://dibakarskcg.github.io/income-tax-calculator/)
 
 ## Getting Started
 
@@ -31,8 +30,8 @@ All you need is a modern web browser (Chrome, Firefox, Edge, etc.) to use the ca
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/dibakarskcg/income-tax-calculator.git
-   ```
+   git clone https://github.com/dibakarSKCG/income-tax-calculator.git
+
 2. **Navigate to the project folder:**
    ```bash
    cd income-tax-calculator
