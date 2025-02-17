@@ -175,6 +175,9 @@
         var houseRentAllowance = parseFloat(document.getElementById("HouseRentAllow").value) || 0;
         var arrears = parseFloat(document.getElementById("Arrears").value) || 0;
 
+        // Sum of Annual Basic Pay and Dearness Allowance
+        var basicPayAndDA = basicPay + dearnessAllowance; // Sum the numbers
+        
         // Annual Gross Salary is the sum of the entered totals
         var annualSalary = basicPay + gradePay + dearnessAllowance + houseRentAllowance + arrears;
 
@@ -184,9 +187,12 @@
         var formattedHRA = new Intl.NumberFormat('en-IN').format(houseRentAllowance);
         var formattedArrears = new Intl.NumberFormat('en-IN').format(arrears);
 
+        var formattedBasicPayAndDA = new Intl.NumberFormat('en-IN').format(basicPayAndDA); // Format the sum
+
         resultDiv.innerHTML += "Total Basic Pay Received: ₹" + formattedBasicPay + "<br>";
         resultDiv.innerHTML += "Total Grade Pay Received: ₹" + formattedGradePay + "<br>";
         resultDiv.innerHTML += "Total Dearness Allowance Received: ₹" + formattedDA + "<br>";
+        resultDiv.innerHTML += "Total Basic Pay and Dearness Allowance Received: ₹" + formattedBasicPayAndDA + "<br>";
         resultDiv.innerHTML += "Total House Rent Allowance Received: ₹" + formattedHRA + "<br>";
         resultDiv.innerHTML += "Total Arrears Received: ₹" + formattedArrears + "<br>";
 
