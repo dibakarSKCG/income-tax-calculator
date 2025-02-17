@@ -168,7 +168,7 @@
         var resultDiv = document.getElementById("result");
         resultDiv.innerHTML = ''; // Clear previous results
 
-        // Read the values (totals for the year)
+        // Read the values (annual totals)
         var basicPay = parseFloat(document.getElementById("basicPay").value) || 0;
         var gradePay = parseFloat(document.getElementById("gradePay").value) || 0;
         var dearnessAllowance = parseFloat(document.getElementById("DearnessAllow").value) || 0;
@@ -224,8 +224,8 @@
         var roundedTaxableIncome = new Intl.NumberFormat('en-IN').format(taxableIncome);
         resultDiv.innerHTML += "<b>Total Taxable Income (Rounded off to the nearest ten rupees): ₹" + roundedTaxableIncome + "</b><br>";
 
-        // Convert the rounded taxable income into words
-        let taxableIncomeWords = numberToWords(Math.round(taxableIncome));
+        // Convert the rounded taxable income into words using Indian counting system
+        let taxableIncomeWords = numberToIndianWords(Math.round(taxableIncome));
         resultDiv.innerHTML += "<b>[</b> Total Taxable Income in words: <b>" + taxableIncomeWords.toUpperCase() + "</b>]<br><hr>";
 
         var taxPayment = calculateTax(taxableIncome, taxRegime);
@@ -238,25 +238,76 @@
       exemptionContainer.style.display = taxRegime === 'old' ? 'block' : 'none';
     }
 
-    function numberToWords(num) {
-      const ones = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-      const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
-      const teens = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+    // Function to convert numbers to words using the Indian numbering system
+    function numberToIndianWords(num) {
+      if (num === 0) return "zero";
 
-      if (num < 10) return ones[num];
-      if (num >= 10 && num < 20) return teens[num - 10];
-      if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? '-' + ones[num % 10] : '');
-      if (num < 1000) return ones[Math.floor(num / 100)] + ' hundred' + (num % 100 !== 0 ? ' ' + numberToWords(num % 100) : '');
-      
-      // For thousands and beyond
-      for (let divisor of [[1000000, 'million'], [1000, 'thousand']]) {
-        if (num < divisor[0]) continue;
-        return numberToWords(Math.floor(num / divisor[0])) + ' ' + divisor[1] + (num % divisor[0] !== 0 ? ' ' + numberToWords(num % divisor[0]) : '');
+      const ones = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+      const teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+      const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+
+      let words = "";
+
+      // Convert numbers less than 1000
+      function convertHundred(n) {
+        let str = "";
+        if (n > 99) {
+          str += ones[Math.floor(n / 100)] + " hundred";
+          n = n % 100;
+          if (n) str += " ";
+        }
+        if (n > 9 && n < 20) {
+          str += teens[n - 10];
+        } else if (n >= 20) {
+          str += tens[Math.floor(n / 10)];
+          if (n % 10) {
+            str += " " + ones[n % 10];
+          }
+        } else if (n > 0 && n < 10) {
+          str += ones[n];
+        }
+        return str;
       }
+
+      // Process Crore (1 Crore = 1,00,00,000)
+      if (num >= 10000000) {
+        let crore = Math.floor(num / 10000000);
+        words += convertHundred(crore) + " crore";
+        num = num % 10000000;
+        if (num) words += " ";
+      }
+
+      // Process Lakh (1 Lakh = 1,00,000)
+      if (num >= 100000) {
+        let lakh = Math.floor(num / 100000);
+        words += convertHundred(lakh) + " lakh";
+        num = num % 100000;
+        if (num) words += " ";
+      }
+
+      // Process Thousand
+      if (num >= 1000) {
+        let thousand = Math.floor(num / 1000);
+        words += convertHundred(thousand) + " thousand";
+        num = num % 1000;
+        if (num) words += " ";
+      }
+
+      // Process Hundreds and below
+      if (num > 0) {
+        words += convertHundred(num);
+      }
+
+      return words;
     }
 
     // Example usage for 50 million (50,000,000)
-    console.log(numberToWords(50000000)); // Outputs: "fifty million"
+    console.log(numberToIndianWords(50000000)); // Example output: "five crore"
+
+    function numberToWords(num) {
+      // Fallback function if needed (currently using numberToIndianWords)
+      return numberToIndianWords(num);
+    }
 
     function calculateTax(taxableIncome, taxRegime) {
       var resultDiv = document.getElementById("result");
@@ -279,8 +330,7 @@
             taxPayment += slabTax;
           }
         }
-      }
-      else {
+      } else {
         resultDiv.innerHTML += "<b>New Regime Tax Breakdown:</b><br>";
         resultDiv.innerHTML += "(1) Income up to ₹3,00,000: NIL<br>";
         var slabRates = [0.05, 0.1, 0.15, 0.2, 0.3];
@@ -324,7 +374,7 @@
       var formattedTaxPaymentRounded = new Intl.NumberFormat('en-IN').format(taxPayment.toFixed(2));
       resultDiv.innerHTML += "<b>Total Tax Payable (Rounded off to the nearest rupee): ₹" + formattedTaxPaymentRounded + "</b><br>";
 
-      let taxPaymentWords = numberToWords(Math.round(taxPayment));
+      let taxPaymentWords = numberToIndianWords(Math.round(taxPayment));
       resultDiv.innerHTML += "<b>[</b> In words: <b>" + taxPaymentWords.toUpperCase() + "</b>]<br><hr>";
 
       return taxPayment;
