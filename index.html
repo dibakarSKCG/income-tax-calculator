@@ -155,7 +155,7 @@
     </div>
     <!-- New field for tax already deducted/deposited -->
     <div class="form-group">
-      <label for="taxPaid">Tax already deducted / deposited:</label>
+      <label for="taxPaid">Tax already Deducted / Deposited:</label>
       <input type="number" id="taxPaid" placeholder="Enter Tax Already Paid">
     </div>
     <button type="submit"><b> Calculate Tax </b></button>
@@ -243,7 +243,7 @@
         // Read tax already deducted / deposited
         var taxAlreadyPaid = parseFloat(document.getElementById("taxPaid").value) || 0;
         var formattedTaxAlreadyPaid = new Intl.NumberFormat('en-IN').format(taxAlreadyPaid);
-        resultDiv.innerHTML += "<b>Tax already deducted / deposited: ₹" + formattedTaxAlreadyPaid + "</b><br>";
+        resultDiv.innerHTML += "<b>Tax already Deducted / Deposited: ₹" + formattedTaxAlreadyPaid + "</b><br>";
 
         // Calculate balance tax payable or refundable
         var balanceTax = taxPayment - taxAlreadyPaid;
