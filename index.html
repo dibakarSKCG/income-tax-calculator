@@ -28,6 +28,7 @@
       border: 1px solid rgba(255, 255, 255, 0.18);
       max-width: 600px;
       margin: auto;
+      text-align: left;
     }
     .form-group {
       margin-bottom: 25px;
@@ -59,6 +60,7 @@
       color: #333;
       cursor: pointer;
       transition: background-color 0.3s ease;
+      margin-right: 10px;
     }
     input[type="radio"]:checked + label {
       background: #4c51bf;
@@ -88,6 +90,10 @@
       color: #ffffff;
       font-size: 18px;
       border: 1px solid rgba(255, 255, 255, 0.18);
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
     footer {
       margin-top: 40px;
@@ -95,7 +101,7 @@
       color: #ffffff;
     }
     #result, body, input, footer {
-      color: #000; /* This sets the text color to black */
+      color: #000; /* Sets the text color to black in results */
     }
     .tax-slabs {
       max-width: 800px;
@@ -147,6 +153,11 @@
       <label for="exemptionAmount">Exemptions+Savings+Investments Amount:</label>
       <input type="number" id="exemptionAmount" placeholder="Enter Amount">
     </div>
+    <!-- New field for tax already deducted/deposited -->
+    <div class="form-group">
+      <label for="taxPaid">Tax already deducted / deposited:</label>
+      <input type="number" id="taxPaid" placeholder="Enter Tax Already Paid">
+    </div>
     <button type="submit"><b> Calculate Tax </b></button>
   </form>
 
@@ -168,27 +179,27 @@
         var resultDiv = document.getElementById("result");
         resultDiv.innerHTML = ''; // Clear previous results
 
-        // Read the values (annual totals)
+        // Read input values (annual totals)
         var basicPay = parseFloat(document.getElementById("basicPay").value) || 0;
         var gradePay = parseFloat(document.getElementById("gradePay").value) || 0;
         var dearnessAllowance = parseFloat(document.getElementById("DearnessAllow").value) || 0;
         var houseRentAllowance = parseFloat(document.getElementById("HouseRentAllow").value) || 0;
         var arrears = parseFloat(document.getElementById("Arrears").value) || 0;
         
-        // Sum of Annual Basic Pay and Dearness Allowance
-        var basicPayAndDA = basicPay + dearnessAllowance; // Sum the raw numbers
+        // Sum of Basic Pay and DA
+        var basicPayAndDA = basicPay + dearnessAllowance;
         
-        // Annual Gross Salary is the sum of the entered totals
+        // Calculate Annual Gross Salary
         var annualSalary = basicPay + gradePay + dearnessAllowance + houseRentAllowance + arrears;
 
+        // Format the values
         var formattedBasicPay = new Intl.NumberFormat('en-IN').format(basicPay);
         var formattedGradePay = new Intl.NumberFormat('en-IN').format(gradePay);
         var formattedDA = new Intl.NumberFormat('en-IN').format(dearnessAllowance);
         var formattedHRA = new Intl.NumberFormat('en-IN').format(houseRentAllowance);
         var formattedArrears = new Intl.NumberFormat('en-IN').format(arrears);
-
-        // Format the sum of Basic Pay and DA
         var formattedBasicPayAndDA = new Intl.NumberFormat('en-IN').format(basicPayAndDA);
+        var formattedAnnualSalary = new Intl.NumberFormat('en-IN').format(annualSalary);
 
         resultDiv.innerHTML += "Total Basic Pay Received: ₹" + formattedBasicPay + "<br>";
         resultDiv.innerHTML += "Total Grade Pay Received: ₹" + formattedGradePay + "<br>";
@@ -196,17 +207,15 @@
         resultDiv.innerHTML += "Total Basic Pay and Dearness Allowance Received: ₹" + formattedBasicPayAndDA + "<br>";
         resultDiv.innerHTML += "Total House Rent Allowance Received: ₹" + formattedHRA + "<br>";
         resultDiv.innerHTML += "Total Arrears Received: ₹" + formattedArrears + "<br>";
-
-        var formattedAnnualSalary = new Intl.NumberFormat('en-IN').format(annualSalary);
         resultDiv.innerHTML += "<b>Calculated Annual Gross Salary: ₹" + formattedAnnualSalary + "</b><br><hr>";
 
+        // Read tax regime and exemption amount
         var taxRegime = document.querySelector('input[name="taxRegime"]:checked').value;
         var exemptionAmount = taxRegime === 'old' ? parseFloat(document.getElementById("exemptionAmount").value) || 0 : 0;
-        // Set standard deduction based on tax regime:
+        // Standard deduction based on tax regime
         var standardDeduction = taxRegime === 'old' ? 50000 : 75000;
         var professionalTax = taxRegime === "old" ? 2500 : 0; // Only for Old Regime
         var taxableIncome = Math.max(0, annualSalary - standardDeduction - professionalTax - exemptionAmount);
-
         var formattedStandardDeduction = new Intl.NumberFormat('en-IN').format(standardDeduction);
         var formattedProfessionalTax = new Intl.NumberFormat('en-IN').format(professionalTax);
         var formattedExemptionAmount = new Intl.NumberFormat('en-IN').format(exemptionAmount);
@@ -219,16 +228,27 @@
         var formattedTaxableIncome = new Intl.NumberFormat('en-IN').format(taxableIncome);
         resultDiv.innerHTML += "Total Taxable Income: ₹" + formattedTaxableIncome + "<br>";
 
-        // Rounding off taxable income to nearest 10 rupees
+        // Round taxable income to nearest 10 rupees
         taxableIncome = Math.round(taxableIncome / 10) * 10;
         var roundedTaxableIncome = new Intl.NumberFormat('en-IN').format(taxableIncome);
         resultDiv.innerHTML += "<b>Total Taxable Income (Rounded off to the nearest ten rupees): ₹" + roundedTaxableIncome + "</b><br>";
 
-        // Convert the rounded taxable income into words using Indian counting system
+        // Convert rounded taxable income into words (Indian numbering)
         let taxableIncomeWords = numberToIndianWords(Math.round(taxableIncome));
         resultDiv.innerHTML += "<b>[</b> Total Taxable Income in words: <b>" + taxableIncomeWords.toUpperCase() + "</b>]<br><hr>";
 
+        // Calculate tax payable
         var taxPayment = calculateTax(taxableIncome, taxRegime);
+
+        // Read tax already deducted / deposited
+        var taxAlreadyPaid = parseFloat(document.getElementById("taxPaid").value) || 0;
+        var formattedTaxAlreadyPaid = new Intl.NumberFormat('en-IN').format(taxAlreadyPaid);
+        resultDiv.innerHTML += "<b>Tax already deducted / deposited: ₹" + formattedTaxAlreadyPaid + "</b><br>";
+
+        // Calculate balance tax payable or refundable
+        var balanceTax = taxPayment - taxAlreadyPaid;
+        var formattedBalanceTax = new Intl.NumberFormat('en-IN').format(balanceTax.toFixed(2));
+        resultDiv.innerHTML += "<b>Balance Tax Payable / Refundable: ₹" + formattedBalanceTax + "</b><br>";
       });
     });
 
@@ -301,13 +321,13 @@
       return words;
     }
 
-    // Example usage for 50 million (50,000,000)
-    console.log(numberToIndianWords(50000000)); // Example output: "five crore"
-
+    // Fallback function if needed
     function numberToWords(num) {
-      // Fallback function if needed (currently using numberToIndianWords)
       return numberToIndianWords(num);
     }
+
+    // Example usage for 50 million (50,000,000)
+    console.log(numberToIndianWords(50000000)); // Example output: "five crore"
 
     function calculateTax(taxableIncome, taxRegime) {
       var resultDiv = document.getElementById("result");
@@ -321,12 +341,12 @@
 
         for (var i = 0; i < slabLimits.length; i++) {
           if (taxableIncome > slabLimits[i]) {
-            var nextLimit = i < slabLimits.length - 1 ? slabLimits[i + 1] : taxableIncome;
+            var nextLimit = (i < slabLimits.length - 1) ? slabLimits[i + 1] : taxableIncome;
             var formattedCurrentLimit = new Intl.NumberFormat('en-IN').format(slabLimits[i]);
             var formattedNextLimit = new Intl.NumberFormat('en-IN').format(Math.min(taxableIncome, nextLimit));
             var slabTax = (Math.min(taxableIncome, nextLimit) - slabLimits[i]) * slabRates[i];
             var formattedSlabTax = new Intl.NumberFormat('en-IN').format(slabTax.toFixed(2));
-            resultDiv.innerHTML += "(" + (i+2) + ") " + "Tax for ₹" + formattedCurrentLimit + " to ₹" + formattedNextLimit + " at " + (slabRates[i] * 100) + "%: ₹" + formattedSlabTax + "<br>";
+            resultDiv.innerHTML += "(" + (i+2) + ") Tax for ₹" + formattedCurrentLimit + " to ₹" + formattedNextLimit + " at " + (slabRates[i] * 100) + "%: ₹" + formattedSlabTax + "<br>";
             taxPayment += slabTax;
           }
         }
@@ -338,12 +358,12 @@
 
         for (var i = 0; i < slabLimits.length; i++) {
           if (taxableIncome > slabLimits[i]) {
-            var nextLimit = i < slabLimits.length - 1 ? slabLimits[i + 1] : taxableIncome;
+            var nextLimit = (i < slabLimits.length - 1) ? slabLimits[i + 1] : taxableIncome;
             var formattedCurrentLimit = new Intl.NumberFormat('en-IN').format(slabLimits[i]);
             var formattedNextLimit = new Intl.NumberFormat('en-IN').format(Math.min(taxableIncome, nextLimit));
             var slabTax = (Math.min(taxableIncome, nextLimit) - slabLimits[i]) * slabRates[i];
             var formattedSlabTax = new Intl.NumberFormat('en-IN').format(slabTax.toFixed(2));
-            resultDiv.innerHTML += "(" + (i+2) + ") " + "Tax for ₹" + formattedCurrentLimit + " to ₹" + formattedNextLimit + " at " + (slabRates[i] * 100) + "%: ₹" + formattedSlabTax + "<br>";
+            resultDiv.innerHTML += "(" + (i+2) + ") Tax for ₹" + formattedCurrentLimit + " to ₹" + formattedNextLimit + " at " + (slabRates[i] * 100) + "%: ₹" + formattedSlabTax + "<br>";
             taxPayment += slabTax;
           }
         }
@@ -354,13 +374,13 @@
 
       if (taxRegime === "old") {
         if (taxableIncome <= 500000) {
-          resultDiv.innerHTML += "Tax credit of ₹12,500 (or) Total tax whichever is less for every person whose total taxable income does not exceed ₹5,00,000 (Us 87A)<br><hr>";
+          resultDiv.innerHTML += "Tax credit of ₹12,500 (or) Total tax whichever is less for every person whose total taxable income does not exceed ₹5,00,000 (U/s 87A)<br><hr>";
           taxPayment = Math.max(0, taxPayment - Math.min(12500, taxPayment));
         }
       }
       if (taxRegime === "new") {
         if (taxableIncome <= 700000) {
-          resultDiv.innerHTML += "Tax credit of ₹25,000 (or) Total tax whichever is less for every person whose total taxable income does not exceed ₹7,00,000 (Us 87A)<br><hr>";
+          resultDiv.innerHTML += "Tax credit of ₹25,000 (or) Total tax whichever is less for every person whose total taxable income does not exceed ₹7,00,000 (U/s 87A)<br><hr>";
           taxPayment = Math.max(0, taxPayment - Math.min(25000, taxPayment));
         }
       }
