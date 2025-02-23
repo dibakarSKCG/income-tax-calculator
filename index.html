@@ -153,9 +153,9 @@
       <label for="exemptionAmount">Exemptions+Savings+Investments Amount:</label>
       <input type="number" id="exemptionAmount" placeholder="Enter Amount">
     </div>
-    <!-- New field for tax already deducted/deposited -->
+    <!-- New field for tax already Deducted/Deposited -->
     <div class="form-group">
-      <label for="taxPaid">Tax already deducted / deposited:</label>
+      <label for="taxPaid">Tax already Deducted / Deposited:</label>
       <input type="number" id="taxPaid" placeholder="Enter Tax Already Paid">
     </div>
     <button type="submit"><b> Calculate Tax </b></button>
@@ -240,10 +240,10 @@
         // Calculate tax payable
         var taxPayment = calculateTax(taxableIncome, taxRegime);
 
-        // Read tax already deducted / deposited
+        // Read tax already Deducted / Deposited
         var taxAlreadyPaid = parseFloat(document.getElementById("taxPaid").value) || 0;
         var formattedTaxAlreadyPaid = new Intl.NumberFormat('en-IN').format(taxAlreadyPaid);
-        resultDiv.innerHTML += "<b>Tax already deducted / deposited: ₹" + formattedTaxAlreadyPaid + "</b><br>";
+        resultDiv.innerHTML += "<b>Tax already Deducted / Deposited: ₹" + formattedTaxAlreadyPaid + "</b><br>";
 
         // Calculate balance tax payable or refundable
         var balanceTax = taxPayment - taxAlreadyPaid;
