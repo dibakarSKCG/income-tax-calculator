@@ -155,7 +155,7 @@
     </div>
     <!-- New field for tax already deducted/deposited -->
     <div class="form-group">
-      <label for="taxPaid">Tax already Deducted / Deposited:</label>
+      <label for="taxPaid">Tax already deducted / deposited:</label>
       <input type="number" id="taxPaid" placeholder="Enter Tax Already Paid">
     </div>
     <button type="submit"><b> Calculate Tax </b></button>
@@ -233,7 +233,7 @@
         var roundedTaxableIncome = new Intl.NumberFormat('en-IN').format(taxableIncome);
         resultDiv.innerHTML += "<b>Total Taxable Income (Rounded off to the nearest ten rupees): ₹" + roundedTaxableIncome + "</b><br>";
 
-        // Convert rounded taxable income into words (Indian numbering)
+        // Convert rounded taxable income into words using Indian numbering system
         let taxableIncomeWords = numberToIndianWords(Math.round(taxableIncome));
         resultDiv.innerHTML += "<b>[</b> Total Taxable Income in words: <b>" + taxableIncomeWords.toUpperCase() + "</b>]<br><hr>";
 
@@ -243,12 +243,18 @@
         // Read tax already deducted / deposited
         var taxAlreadyPaid = parseFloat(document.getElementById("taxPaid").value) || 0;
         var formattedTaxAlreadyPaid = new Intl.NumberFormat('en-IN').format(taxAlreadyPaid);
-        resultDiv.innerHTML += "<b>Tax already Deducted / Deposited: ₹" + formattedTaxAlreadyPaid + "</b><br>";
+        resultDiv.innerHTML += "<b>Tax already deducted / deposited: ₹" + formattedTaxAlreadyPaid + "</b><br>";
 
         // Calculate balance tax payable or refundable
         var balanceTax = taxPayment - taxAlreadyPaid;
-        var formattedBalanceTax = new Intl.NumberFormat('en-IN').format(balanceTax.toFixed(2));
-        resultDiv.innerHTML += "<b>Balance Tax Payable / Refundable: ₹" + formattedBalanceTax + "</b><br>";
+       if (balanceTax > 0) {
+          resultDiv.innerHTML += "<b>Balance Tax Amount Payable: ₹" + new Intl.NumberFormat('en-IN').format(balanceTax.toFixed(2)) + "</b><br>";
+       } else if (balanceTax < 0) {
+          resultDiv.innerHTML += "<b>Tax Amount Refundable: ₹" + new Intl.NumberFormat('en-IN').format(Math.abs(balanceTax).toFixed(2)) + "</b><br>";
+       } else {
+          resultDiv.innerHTML += "<b>No Additional Tax is Payable or Refundable</b><br>";
+        }
+
       });
     });
 
@@ -346,7 +352,7 @@
             var formattedNextLimit = new Intl.NumberFormat('en-IN').format(Math.min(taxableIncome, nextLimit));
             var slabTax = (Math.min(taxableIncome, nextLimit) - slabLimits[i]) * slabRates[i];
             var formattedSlabTax = new Intl.NumberFormat('en-IN').format(slabTax.toFixed(2));
-            resultDiv.innerHTML += "(" + (i+2) + ") Tax for ₹" + formattedCurrentLimit + " to ₹" + formattedNextLimit + " at " + (slabRates[i] * 100) + "%: ₹" + formattedSlabTax + "<br>";
+            resultDiv.innerHTML += "(" + (i+2) + ") " + "Tax for ₹" + formattedCurrentLimit + " to ₹" + formattedNextLimit + " at " + (slabRates[i] * 100) + "%: ₹" + formattedSlabTax + "<br>";
             taxPayment += slabTax;
           }
         }
@@ -363,7 +369,7 @@
             var formattedNextLimit = new Intl.NumberFormat('en-IN').format(Math.min(taxableIncome, nextLimit));
             var slabTax = (Math.min(taxableIncome, nextLimit) - slabLimits[i]) * slabRates[i];
             var formattedSlabTax = new Intl.NumberFormat('en-IN').format(slabTax.toFixed(2));
-            resultDiv.innerHTML += "(" + (i+2) + ") Tax for ₹" + formattedCurrentLimit + " to ₹" + formattedNextLimit + " at " + (slabRates[i] * 100) + "%: ₹" + formattedSlabTax + "<br>";
+            resultDiv.innerHTML += "(" + (i+2) + ") " + "Tax for ₹" + formattedCurrentLimit + " to ₹" + formattedNextLimit + " at " + (slabRates[i] * 100) + "%: ₹" + formattedSlabTax + "<br>";
             taxPayment += slabTax;
           }
         }
